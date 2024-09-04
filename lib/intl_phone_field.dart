@@ -13,6 +13,7 @@ import './phone_number.dart';
 class IntlPhoneField extends StatefulWidget {
   /// The TextFormField key.
   final GlobalKey<FormFieldState>? formFieldKey;
+  final bool isRequired;
 
   /// Whether to hide the text being edited (e.g., for passwords).
   final bool obscureText;
@@ -296,6 +297,7 @@ class IntlPhoneField extends StatefulWidget {
     this.pickerDialogStyle,
     this.flagsButtonMargin = EdgeInsets.zero,
     this.magnifierConfiguration,
+    this.isRequired = false,
   }) : super(key: key);
 
   @override
@@ -380,7 +382,6 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
     return TextFormField(
       key: widget.formFieldKey,
@@ -422,27 +423,20 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         );
 
         if (widget.autovalidateMode != AutovalidateMode.disabled) {
-          validatorMessage = await widget.validator?.call(phoneNumber) ?? '';
-          setState(() {}); // Trigger a rebuild to show the validation message
+          validatorMessage = await widget.validator?.call(phoneNumber);
         }
 
         widget.onChanged?.call(phoneNumber);
       },
       validator: (value) {
-        if (value == null || !isNumeric(value)) return 'Invalid phone number format';
-
-        // Custom validation logic
-        if (!value.startsWith('+123')) {
-          return 'Number must start with +123';
-        }
-
+        if (value == null) return validatorMessage;
         if (!widget.disableLengthCheck) {
-          if (value.length < 10 || value.length > 15) {
-            return 'Phone number length should be between 10 and 15 digits';
-          }
+          return value.length >= _selectedCountry.minLength && value.length <= _selectedCountry.maxLength
+              ? null
+              : widget.invalidNumberMessage;
         }
 
-        return null;
+        return validatorMessage;
       },
       maxLength: widget.disableLengthCheck ? null : _selectedCountry.maxLength,
       keyboardType: widget.keyboardType,
