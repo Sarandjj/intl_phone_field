@@ -1,6 +1,7 @@
 library intl_phone_field;
 
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -320,9 +321,10 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
     number = widget.initialValue ?? '';
     if (widget.initialCountryCode != null && number.startsWith('+')) {
       number = number.substring(1);
+      log('initialCountryCode: ${widget.initialCountryCode}');
       // parse initial value
-      _selectedCountry = countries.firstWhere((country) => number.startsWith(country.fullCountryCode),
-          orElse: () => _countryList.first);
+      _selectedCountry =
+          countries.firstWhere((country) => number.startsWith(country.dialCode), orElse: () => _countryList.first);
 
       // remove country code from the initial number value
       number = number.replaceFirst(RegExp("^${_selectedCountry.fullCountryCode}"), "");
