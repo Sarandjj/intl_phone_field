@@ -318,7 +318,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
     _countryList = widget.countries ?? countries;
     filteredCountries = _countryList;
     number = widget.initialValue ?? '';
-    if (widget.initialCountryCode == null && number.startsWith('+')) {
+    if (widget.initialCountryCode != null && number.startsWith('+')) {
       number = number.substring(1);
       // parse initial value
       _selectedCountry = countries.firstWhere((country) => number.startsWith(country.fullCountryCode),
