@@ -319,12 +319,11 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
     _countryList = widget.countries ?? countries;
     filteredCountries = _countryList;
     number = widget.initialValue ?? '';
-    if (widget.initialCountryCode != null && number.startsWith('+')) {
+    if (widget.initialCountryCode == null && number.startsWith('+')) {
       number = number.substring(1);
-      log('initialCountryCode: ${widget.initialCountryCode}');
       // parse initial value
-      _selectedCountry =
-          countries.firstWhere((country) => number.startsWith(country.dialCode), orElse: () => _countryList.first);
+      _selectedCountry = countries.firstWhere((country) => number.startsWith(country.fullCountryCode),
+          orElse: () => _countryList.first);
 
       // remove country code from the initial number value
       number = number.replaceFirst(RegExp("^${_selectedCountry.fullCountryCode}"), "");
@@ -458,11 +457,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         decoration: widget.dropdownDecoration,
         child: InkWell(
           borderRadius: widget.dropdownDecoration.borderRadius as BorderRadius?,
-          onTap: widget.isRequired
-              ? widget.enabled
-                  ? _changeCountry
-                  : null
-              : null,
+          onTap: widget.enabled ? _changeCountry : null,
           child: Padding(
             padding: widget.flagsButtonPadding,
             child: Row(
